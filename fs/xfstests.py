@@ -270,17 +270,17 @@ class Xfstests(Test):
                 if self.share_exclude:
                     self._create_test_list(self.share_exclude, "shared",
                                            dangerous=False)
-        if self.detected_distro.name is not 'SuSE':
-            if process.system('useradd 123456-fsgqa', sudo=True, ignore_status=True):
+
+	if process.system('useradd -m -U 123456-fsgqa', sudo=True, ignore_status=True):
                 self.log.warn('useradd 123456-fsgqa failed')
-            if process.system('useradd fsgqa', sudo=True, ignore_status=True):
+        if process.system('useradd -m -U fsgqa', sudo=True, ignore_status=True):
                 self.log.warn('useradd fsgqa failed')
-        else:
-            if process.system('useradd -m -U fsgqa', sudo=True, ignore_status=True):
-                self.log.warn('useradd fsgqa failed')
+
+	if self.detected_distro.name is 'SuSE':
             if process.system('groupadd sys', sudo=True, ignore_status=True):
                 self.log.warn('groupadd sys failed')
-        if not os.path.exists(self.scratch_mnt):
+
+	if not os.path.exists(self.scratch_mnt):
             os.makedirs(self.scratch_mnt)
         if not os.path.exists(self.test_mnt):
             os.makedirs(self.test_mnt)
@@ -318,14 +318,13 @@ class Xfstests(Test):
             self.fail('One or more tests failed. Please check the logs.')
 
     def tearDown(self):
-        if self.detected_distro.name is not 'SuSE':
-            process.system('userdel 123456-fsgqa', sudo=True)
-            process.system('userdel fsgqa', sudo=True)
-        else:
-            process.system('userdel -r -f fsgqa', sudo=True)
-            process.system('groupdel fsgqa', sudo=True)
-            process.system('groupdel sys', sudo=True)
-        # In case if any test has been interrupted
+        process.system('userdel -r -f 123456-fsgqa', sudo=True)
+	process.system('userdel -r -f fsgqa', sudo=True)
+
+	if self.detected_distro.name is 'SuSE':
+		process.system('groupdel sys', sudo=True)
+
+	# In case if any test has been interrupted
         process.system('umount %s %s' % (self.scratch_mnt, self.test_mnt),
                        sudo=True, ignore_status=True)
         if os.path.exists(self.scratch_mnt):

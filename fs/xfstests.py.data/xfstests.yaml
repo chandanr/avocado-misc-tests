@@ -2,26 +2,53 @@ setup:
     skip_dangerous: True
     scratch_mnt: '/mnt/scratch'
     test_mnt: '/mnt/test'
-    disk_mnt: '/mnt/loop-device'
+    # disk_mnt: '/mnt/loop-device'
     # Uncomment and edit test_range for running specific tests
     # test_range: '73,217-415'
     # Run with either loop_type (or) disk_type
-    loop_type: !mux
-        type: 'loop'
-        loop_size: '7GiB'
-        # Option to provide disk for loop device creation,
-        # Uses '/' by default for file creation
-        disk:
+    # loop_type: !mux
+    #     type: 'loop'
+    #     loop_size: '7GiB'
+    #     # Option to provide disk for loop device creation,
+    #     # Uses '/' by default for file creation
+    #     disk:
     fs_type: !mux
-        fs_ext4:
-            fs: 'ext4'
-        fs_xfs:
+        fs_xfs_1:
             fs: 'xfs'
+            mkfs_opt: '-m rmapbt=1,reflink=1 -b size=4k'
             # Exclude only if test_range not provided
-            # exclude: '2,4-7,203'
-            # gen_exclude: '1-10,30-45'
+            # exclude: '017,323,530'
+            gen_exclude: '017,323,475,530'
             # share_exclude: '1-2'
-    # disk_type: !mux
-    #    type: 'disk'
-    #    disk_test: /dev/sdx1
-    #    disk_scratch: /dev/sdx2
+        fs_xfs_2:
+            fs: 'xfs'
+            mkfs_opt: '-m rmapbt=1,reflink=1 -b size=1k'
+            # Exclude only if test_range not provided
+            # exclude: '017,323,530'
+            gen_exclude: '017,323,475,530'
+            # share_exclude: '1-2'
+        fs_xfs_3:
+            fs: 'xfs'
+            mkfs_opt: '-m crc=0 -b size=512'
+            # Exclude only if test_range not provided
+            # exclude: '017,323,530'
+            gen_exclude: '017,323,475,530'
+            # share_exclude: '1-2'
+        fs_xfs_4:
+            fs: 'xfs'
+            mkfs_opt: '-m crc=0 -b size=1k'
+            # Exclude only if test_range not provided
+            # exclude: '017,323,530'
+            gen_exclude: '017,323,475,530'
+            # share_exclude: '1-2'
+        fs_xfs_5:
+            fs: 'xfs'
+            mkfs_opt: '-m crc=0 -b size=4k'
+            # Exclude only if test_range not provided
+            # exclude: '017,323,530'
+            gen_exclude: '017,323,475,530'
+            # share_exclude: '1-2'
+    disk_type: !mux
+       type: 'disk'
+       disk_test: /dev/loop0
+       disk_scratch: /dev/loop1
